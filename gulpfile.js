@@ -1,90 +1,131 @@
-const gulp = require('gulp');
-const gulpIf = require('gulp-if');
-const browserSync = require('browser-sync').create();
-const sass = require('gulp-sass');
-const htmlmin = require('gulp-htmlmin');
-const cssmin = require('gulp-cssmin');
-const uglify = require('gulp-uglify');
-const imagemin = require('gulp-imagemin');
-const concat = require('gulp-concat');
-const jsImport = require('gulp-js-import');
-const sourcemaps = require('gulp-sourcemaps');
-const htmlPartial = require('gulp-html-partial');
-const clean = require('gulp-clean');
-const isProd = process.env.NODE_ENV === 'prod';
+"use strict";
 
-const htmlFile = [
-    'src/*.html'
-]
+var gulp = require('gulp'),
+  sass = require('gulp-sass')(require('sass')),
+  del = require('del'),
+  uglify = require('gulp-uglify'),
+  cleanCSS = require('gulp-clean-css'),
+  rename = require("gulp-rename"),
+  merge = require('merge-stream'),
+  htmlreplace = require('gulp-html-replace'),
+  autoprefixer = require('gulp-autoprefixer'),
+  browserSync = require('browser-sync').create();
 
-function html() {
-    return gulp.src(htmlFile)
-        .pipe(htmlPartial({
-            basePath: 'src/partials/'
-        }))
-        .pipe(gulpIf(isProd, htmlmin({
-            collapseWhitespace: true
-        })))
-        .pipe(gulp.dest('docs'));
-}
+// Clean task
+gulp.task('clean', function() {
+  return del(['dist', 'assets/css/app.css']);
+});
 
-function css() {
-    return gulp.src('src/sass/style.scss')
-        .pipe(gulpIf(!isProd, sourcemaps.init()))
-        .pipe(sass({
-            includePaths: ['node_modules']
-        }).on('error', sass.logError))
-        .pipe(gulpIf(!isProd, sourcemaps.write()))
-        .pipe(gulpIf(isProd, cssmin()))
-        .pipe(gulp.dest('docs/css/'));
-}
+// Copy third party libraries from node_modules into /vendor
+gulp.task('vendor:js', function() {
+  return gulp.src([
+    './node_modules/bootstrap/dist/js/*',
+    './node_modules/@popperjs/core/dist/umd/popper.*'
+  ])
+    .pipe(gulp.dest('./assets/js/vendor'));
+});
 
-function js() {
-    return gulp.src('src/js/*.js')
-        .pipe(jsImport({
-            hideConsole: true
-        }))
-        .pipe(concat('all.js'))
-        .pipe(gulpIf(isProd, uglify()))
-        .pipe(gulp.dest('docs/js'));
-}
+// Copy bootstrap-icons from node_modules into /fonts
+gulp.task('vendor:fonts', function() {
+  return  gulp.src([
+    './node_modules/bootstrap-icons/**/*',
+    '!./node_modules/bootstrap-icons/package.json',
+    '!./node_modules/bootstrap-icons/README.md',
+  ])
+    .pipe(gulp.dest('./assets/fonts/bootstrap-icons'))
+});
 
-function img() {
-    return gulp.src('src/img/*')
-        .pipe(gulpIf(isProd, imagemin()))
-        .pipe(gulp.dest('docs/img/'));
-}
+// vendor task
+gulp.task('vendor', gulp.parallel('vendor:fonts', 'vendor:js'));
 
-function serve() {
-    browserSync.init({
-        open: true,
-        server: './docs'
-    });
-}
+// Copy vendor's js to /dist
+gulp.task('vendor:build', function() {
+  var jsStream = gulp.src([
+    './assets/js/vendor/bootstrap.bundle.min.js',
+    './assets/js/vendor/popper.min.js'
+  ])
+    .pipe(gulp.dest('./dist/assets/js/vendor'));
+  var fontStream = gulp.src(['./assets/fonts/bootstrap-icons/**/*.*']).pipe(gulp.dest('./dist/assets/fonts/bootstrap-icons'));
+  return merge (jsStream, fontStream);
+})
 
-function browserSyncReload(done) {
+// Copy Bootstrap SCSS(SASS) from node_modules to /assets/scss/bootstrap
+gulp.task('bootstrap:scss', function() {
+  return gulp.src(['./node_modules/bootstrap/scss/**/*'])
+    .pipe(gulp.dest('./assets/scss/bootstrap'));
+});
+
+// Compile SCSS(SASS) files
+gulp.task('scss', gulp.series('bootstrap:scss', function compileScss() {
+  return gulp.src(['./assets/scss/*.scss'])
+    .pipe(sass.sync({
+      outputStyle: 'expanded'
+    }).on('error', sass.logError))
+    .pipe(autoprefixer())
+    .pipe(gulp.dest('./assets/css'))
+}));
+
+// Minify CSS
+gulp.task('css:minify', gulp.series('scss', function cssMinify() {
+  return gulp.src("./assets/css/*.css")
+    .pipe(cleanCSS())
+    .pipe(rename({
+      suffix: '.min'
+    }))
+    .pipe(gulp.dest('./dist/assets/css'))
+    .pipe(browserSync.stream());
+}));
+
+// Minify Js
+gulp.task('js:minify', function () {
+  return gulp.src([
+    './assets/js/app.js'
+  ])
+    .pipe(uglify())
+    .pipe(rename({
+      suffix: '.min'
+    }))
+    .pipe(gulp.dest('./dist/assets/js'))
+    .pipe(browserSync.stream());
+});
+
+// Replace HTML block for Js and Css file to min version upon build and copy to /dist
+gulp.task('replaceHtmlBlock', function () {
+  return gulp.src(['*.html'])
+    .pipe(htmlreplace({
+      'js': 'assets/js/app.min.js',
+      'css': 'assets/css/app.min.css'
+    }))
+    .pipe(gulp.dest('dist/'));
+});
+
+// Configure the browserSync task and watch file path for change
+gulp.task('dev', function browserDev(done) {
+  browserSync.init({
+    server: {
+      baseDir: "./"
+    }
+  });
+  gulp.watch(['assets/scss/*.scss','assets/scss/**/*.scss','!assets/scss/bootstrap/**'], gulp.series('css:minify', function cssBrowserReload (done) {
+    browserSync.reload();
+    done(); //Async callback for completion.
+  }));
+  gulp.watch('assets/js/app.js', gulp.series('js:minify', function jsBrowserReload (done) {
     browserSync.reload();
     done();
-}
+  }));
+  gulp.watch(['*.html']).on('change', browserSync.reload);
+  done();
+});
 
+// Build task
+gulp.task("build", gulp.series(gulp.parallel('css:minify', 'js:minify', 'vendor'), 'vendor:build', function copyAssets() {
+  return gulp.src([
+    '*.html',
+    "assets/img/**"
+  ], { base: './'})
+    .pipe(gulp.dest('dist'));
+}));
 
-function watchFiles() {
-    gulp.watch('src/**/*.html', gulp.series(html, browserSyncReload));
-    gulp.watch('src/**/*.scss', gulp.series(css, browserSyncReload));
-    gulp.watch('src/**/*.js', gulp.series(js, browserSyncReload));
-    gulp.watch('src/img/**/*.*', gulp.series(img));
-
-    return;
-}
-
-function del() {
-    return gulp.src('docs/*', {read: false})
-        .pipe(clean());
-}
-
-exports.css = css;
-exports.html = html;
-exports.js = js;
-exports.del = del;
-exports.serve = gulp.parallel(html, css, js, img, watchFiles, serve);
-exports.default = gulp.series(del, html, css, js, img);
+// Default task
+gulp.task("default", gulp.series("clean", 'build', 'replaceHtmlBlock'));

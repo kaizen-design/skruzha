@@ -1,35 +1,49 @@
 {
-  "name": "bootstrap5-boilerplate",
-  "version": "1.0.1",
-  "description": "Bootstrap 5+ boilerplate with Gulp4, cross-env, SaSS, sourcemaps, concat, CSS & HTML minification, uglify, image optimization, template partials, BrowserSync, ready for deployment.",
-  "author": "Sal",
-  "license": "MIT",
-  "homepage": "https://bootstrapstarter.com/bootstrap-templates/template-basic-bootstrap5-html/",
+  "name": "bootstrap-5-sass-gulp-4-boilerplate",
+  "version": "1.0.4",
+  "description": "A Bootstrap 5.0.2 boilerplate with sass and gulp 4",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wowthemesnet/bootstrap5-boilerplate.git"
+    "url": "git+https://github.com/JayeshLab/bootstrap-5-sass-gulp-4-boilerplate.git"
   },
-  "scripts": {
-    "start": "gulp",
-    "dev": "gulp serve",
-    "prod": "cross-env NODE_ENV=prod gulp"
+  "keywords": [
+    "bootstrap 5",
+    "sass",
+    "scss",
+    "gulp",
+    "gulp 4",
+    "bootstrap icons",
+    "boilerplate",
+    "stater"
+  ],
+  "author": "Jayesh Vachhani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JayeshLab/bootstrap-5-sass-gulp-4-boilerplate/issues"
+  },
+  "homepage": "https://github.com/JayeshLab/bootstrap-5-sass-gulp-4-boilerplate#readme",
+  "dependencies": {
+    "@popperjs/core": "^2.11.6",
+    "bootstrap": "^5.2.3",
+    "bootstrap-icons": "^1.10.2"
   },
   "devDependencies": {
-    "bootstrap": "5.0.0-beta3",
-    "browser-sync": "^2.26.3",
-    "cross-env": "^7.0.2",
+    "browser-sync": "^2.27.10",
+    "del": "^3.0.0",
     "gulp": "^4.0.2",
-    "gulp-clean": "^0.4.0",
+    "gulp-autoprefixer": "^8.0.0",
+    "gulp-clean-css": "3.9.4",
     "gulp-concat": "^2.6.1",
-    "gulp-cssmin": "^0.2.0",
-    "gulp-html-partial": "^1.0.1",
-    "gulp-htmlmin": "^5.0.1",
-    "gulp-if": "^2.0.2",
-    "gulp-imagemin": "^5.0.3",
-    "gulp-js-import": "^1.0.6",
-    "gulp-sass": "^4.0.2",
+    "gulp-html-replace": "^1.6.2",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^2.6.5",
-    "gulp-uglify": "^3.0.2"
-  },
-  "dependencies": {}
+    "gulp-uglify": "^3.0.2",
+    "merge-stream": "^1.0.1",
+    "sass": "^1.49.0"
+  }
 }
