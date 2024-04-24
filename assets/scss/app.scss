@@ -63,10 +63,15 @@ html {
       background: #fff;
       position: absolute;
       top: 0;
-      left: -20%;
+      left: -31%;
       right: 31%;
       bottom: 0;
       transform: skewX(-35deg);
+      @include media-breakpoint-down(md) {
+        transform: none;
+        left: 0;
+        right: 0;
+      }
     }
   }
 }
@@ -91,6 +96,37 @@ html {
       left: 50%;
       transform: translateX(-50%) translateY(-50%);
     }
+  }
+}
+
+.offcanvas {
+  address {
+    font-size: 0.75rem;
+  }
+}
+
+.nav-menu {
+  & > li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ccc;
+    & > ul {
+      li {
+        font-size: 0.875rem;
+      }
+    }
+    a {
+      text-decoration: none;
+      color: #212529;
+      &:hover {
+        color: #000;
+      }
+    }
+  }
+}
+
+.form {
+  small {
+    font-size: 0.75rem;
   }
 }
 

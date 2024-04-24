@@ -12162,10 +12162,9 @@ html.fp-enabled,
 
 #fp-nav ul li .fp-tooltip {
   position: absolute;
-  top: -5px;
+  top: -6px;
   color: #fff;
   font-size: 14px;
-  font-family: arial, helvetica, sans-serif;
   white-space: nowrap;
   max-width: 220px;
   overflow: hidden;
@@ -12348,10 +12347,17 @@ html {
   background: #fff;
   position: absolute;
   top: 0;
-  left: -20%;
+  left: -31%;
   right: 31%;
   bottom: 0;
   transform: skewX(-35deg);
+}
+@media (max-width: 767.98px) {
+  .section.half-content:after {
+    transform: none;
+    left: 0;
+    right: 0;
+  }
 }
 
 .bg-cover {
@@ -12373,6 +12379,29 @@ html {
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
+}
+
+.offcanvas address {
+  font-size: 0.75rem;
+}
+
+.nav-menu > li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ccc;
+}
+.nav-menu > li > ul li {
+  font-size: 0.875rem;
+}
+.nav-menu > li a {
+  text-decoration: none;
+  color: #212529;
+}
+.nav-menu > li a:hover {
+  color: #000;
+}
+
+.form small, .form .small {
+  font-size: 0.75rem;
 }
 
 /* RESPONSIVE CSS
