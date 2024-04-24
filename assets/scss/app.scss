@@ -87,6 +87,9 @@ html {
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.5);
     background: rgba(0, 0, 0, 0.5);
+    @include media-breakpoint-down(md) {
+      height: 50px;
+    }
     &:nth-child(even) {
       background: rgba(255, 255, 255, 0.5);
     }
@@ -127,6 +130,12 @@ html {
 .form {
   small {
     font-size: 0.75rem;
+  }
+}
+
+.display-4 {
+  @include media-breakpoint-down(md) {
+    font-size: 1.5rem;
   }
 }
 
