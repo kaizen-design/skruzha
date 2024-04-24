@@ -44,7 +44,7 @@ html {
 .section {
   position: relative;
   & > .fp-overflow {
-    z-index: 1;
+    z-index: 2;
   }
   &.has-overlay {
     &:before {
@@ -74,10 +74,19 @@ html {
       }
     }
   }
+  .bg-video {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    object-fit: cover;
+  }
 }
 
 .bg-cover {
-  background-size: cover;
+  background-size: cover!important;
 }
 
 .services-list {

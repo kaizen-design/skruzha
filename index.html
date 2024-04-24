@@ -17,7 +17,11 @@
 
   <body>
     <div id="fullpage">
-      <div class="section bg-cover text-white has-overlay" style="background: url(./assets/img/bg.jpg) no-repeat center center;">
+      <div class="section bg-cover text-white has-overlay">
+        <video class="bg-video w-100 h-100" autoplay muted loop poster="./assets/img/bg.jpg">
+          <source src="./assets/img/video.mp4" type="video/mp4">
+          <img src="./assets/img/bg.jpg" alt="">
+        </video>
         <nav class="navbar navbar-dark py-3">
           <div class="container">
             <span class="navbar-brand mb-0 h1 text-white d-flex flex-column">
@@ -34,7 +38,6 @@
                 <span class="navbar-toggler-icon"></span>
               </button>
             </div>
-            
           </div>
         </nav>
         <div class="container">
